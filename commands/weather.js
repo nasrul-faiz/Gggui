@@ -2,7 +2,11 @@ const axios = require('axios');
 
 module.exports = async function (sock, chatId, message, city) {
     try {
-        const apiKey = '4902c0f2550f58298ad4146a92b65e10';  // Replace with your OpenWeather API Key
+        const apiKey = process.env.OPENWEATHER_API_KEY || '';
+        if (!apiKey) {
+            await sock.sendMessage(chatId, { text: '❌ OPENWEATHER_API_KEY is not configured.' }, { quoted: message });
+            return;
+        }
         const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
         const weather = response.data;
         const weatherText = `Weather in ${weather.name}: ${weather.weather[0].description}. Temperature: ${weather.main.temp}°C.`;

@@ -27,6 +27,13 @@ async function getQuotedOrOwnImageUrl(sock, message) {
 
 async function reminiCommand(sock, chatId, message, args) {
     try {
+        const reminiApiKey = process.env.PRINCETECH_API_KEY || '';
+        if (!reminiApiKey) {
+            return sock.sendMessage(chatId, {
+                text: '❌ Remini API key is not configured. Set PRINCETECH_API_KEY in your environment.'
+            }, { quoted: message });
+        }
+
         let imageUrl = null;
         
         // Check if args contain a URL
@@ -51,7 +58,7 @@ async function reminiCommand(sock, chatId, message, args) {
         }
 
         // Call the Remini API
-        const apiUrl = `https://api.princetechn.com/api/tools/remini?apikey=prince_tech_api_azfsbshfb&url=${encodeURIComponent(imageUrl)}`;
+        const apiUrl = `https://api.princetechn.com/api/tools/remini?apikey=${encodeURIComponent(reminiApiKey)}&url=${encodeURIComponent(imageUrl)}`;
         
         const response = await axios.get(apiUrl, {
             timeout: 60000, // 60 second timeout (AI processing takes longer)
